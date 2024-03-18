@@ -2,15 +2,17 @@ import 'package:mysql1/mysql1.dart';
 import 'package:mysql_app/model/user_model.dart';
 
 class Mysql {
-  var settings =  ConnectionSettings(
+
+  Mysql();
+
+   Future<MySqlConnection> getConnection() async {
+    var settings =  ConnectionSettings(
     host: 'localhost', 
     port: 3306,
     user: 'root',
-    password: '',
+    password: '12345',
     db: 'flutter_mysql'
   );
-
-  Future<MySqlConnection> getConnection() async {
     return await MySqlConnection.connect(settings);
   }
   
@@ -22,22 +24,20 @@ class Mysql {
     MySqlConnection connection = await getConnection();
     await connection.query(
       'INSERT INTO users (id, name, email, password) VALUES (?, ?, ?, ?)',
-      [user.name, user.email, user.password]
+      [user.name, user.email]
     );
-    await closeConnection(connection);
+    // await closeConnection(connection);
   }
 
   Future<List<UserModel>> getAllUsers() async {
     MySqlConnection connection = await getConnection();
     var results = await connection.query('SELECT * FROM users');
-    await closeConnection(connection);
     return results.map((e) => UserModel.fromJson(e.fields)).toList();
   }
 
   Future<UserModel> getUserById({required int id}) async {
     MySqlConnection connection = await getConnection();
     var results = await connection.query('SELECT * FROM users WHERE id = ?', [id]);
-    await closeConnection(connection);
     return UserModel.fromJson(results.first.fields);
   }
 
@@ -45,7 +45,7 @@ class Mysql {
     MySqlConnection connection = await getConnection();
     await connection.query(
       'UPDATE users SET name = ?, email = ?, password = ? WHERE id = ?',
-      [user.name, user.email, user.password, user.id]
+      [user.name, user.email, user.id]
     );
     await closeConnection(connection);
   }
