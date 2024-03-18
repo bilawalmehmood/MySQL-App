@@ -7,22 +7,27 @@ class UserListController extends GetxController{
   RxBool isLoading = false.obs;
 
   @override
-  void onInit() async{
-    await DatabaseHelper().initializeDatabase();
+  void onReady() async{
     getAllUsers();
     super.onInit();
   }
 
-  void getAllUsers() async {
+  Future<List<UserModel>> getAllUsers() async {
+    List<UserModel> usersList =[];
     try {
       isLoading(true);
+      await DatabaseHelper().initializeDatabase();
       List<Map<String, dynamic>> userMapList = await DatabaseHelper().getUserMapList();
-      users.value = userMapList.map((e) => UserModel.fromJson(e)).toList();
+      userMapList.map((data) {
+        usersList.add(UserModel.fromJson(data));
+      },).toList();
+      users.value=usersList;
       isLoading(false);
     } catch (e) {
       isLoading(false);
       Get.snackbar('Error', e.toString());
     }
+    return usersList;
   }
 
   void deleteUser(int id) async {

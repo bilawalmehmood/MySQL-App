@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mysql_app/screens/home_screen.dart';
 import 'package:mysql_app/screens/user_list_screen.dart';
 
 void main() {
